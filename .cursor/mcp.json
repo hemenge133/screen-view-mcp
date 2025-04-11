@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "screen-view-mcp": {
+      "command": "node",
+      "args": ["./dist/index.js"],
+      "env": {
+        "ANTHROPIC_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+} 
