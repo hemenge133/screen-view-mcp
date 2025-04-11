@@ -62,7 +62,7 @@ To use this MCP server with Cursor:
      "mcpServers": {
        "screen-view-mcp": {
          "command": "node",
-         "args": ["./dist/index.js"],
+         "args": ["minimal-mcp-server.js"],
          "env": {
            "ANTHROPIC_API_KEY": "your_api_key_here"
          }
@@ -76,6 +76,20 @@ To use this MCP server with Cursor:
    ```
 4. Open the project in Cursor, and the MCP server will be automatically available to the Cursor Agent.
 
+### Using the Minimal Server
+
+This project now includes a simpler and more reliable implementation of the MCP server in `minimal-mcp-server.js`. This implementation:
+
+- Uses the latest MCP SDK API with the `McpServer` class
+- Properly handles the MCP protocol responses
+- Connects via the stdio transport for compatibility with Cursor
+
+To run the minimal server directly:
+
+```bash
+node minimal-mcp-server.js
+```
+
 ### Global Configuration (optional)
 
 To make this MCP server available across all projects:
@@ -86,7 +100,7 @@ To make this MCP server available across all projects:
      "mcpServers": {
        "screen-view-mcp": {
          "command": "node",
-         "args": ["path/to/screen-view-mcp/dist/index.js"],
+         "args": ["path/to/screen-view-mcp/minimal-mcp-server.js"],
          "env": {
            "ANTHROPIC_API_KEY": "your_api_key_here"
          }
@@ -107,6 +121,15 @@ Run tests:
 ```bash
 npm test
 ```
+
+## Troubleshooting
+
+If you encounter issues with the MCP server:
+
+1. Make sure your Anthropic API key is correctly set in the `.env` file
+2. Check that you've built the project with `npm run build` before running
+3. Ensure you're using the correct server implementation (`minimal-mcp-server.js`)
+4. If you're still having issues, try running the server directly with `node minimal-mcp-server.js` to see any error output
 
 ## License
 
