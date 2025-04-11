@@ -1,1 +1,54 @@
-import fs from 'fs';\nimport path from 'path';\nimport screenshot from 'screenshot-desktop';\nimport { logInfo, logError } from '../utils/logger';\n\n/**\n * Captures a screenshot of the entire desktop\n * \n * @returns Promise<string> Base64-encoded image data\n */\nexport async function captureScreenshot(): Promise<string> {\n  try {\n    logInfo('Capturing full screen screenshot');\n    \n    // Capture screenshot as Buffer\n    const screenshotBuffer = await screenshot();\n    \n    // Convert Buffer to Base64 string\n    const base64Image = screenshotBuffer.toString('base64');\n    \n    logInfo('Screenshot captured successfully');\n    return base64Image;\n  } catch (error) {\n    const errorMessage = error instanceof Error ? error.message : 'Unknown error';\n    logError('Failed to capture screenshot', { error: errorMessage });\n    throw new Error(`Screenshot capture failed: ${errorMessage}`);\n  }\n}\n\n/**\n * Saves a base64 image to a file (for debugging/testing)\n * \n * @param base64Image Base64-encoded image data\n * @param filePath Path to save the image file\n */\nexport async function saveScreenshotToFile(base64Image: string, filePath: string = './screenshot.png'): Promise<void> {\n  try {\n    // Create the directory if it doesn't exist\n    const dir = path.dirname(filePath);\n    if (!fs.existsSync(dir)) {\n      fs.mkdirSync(dir, { recursive: true });\n    }\n    \n    // Convert Base64 to Buffer and save to file\n    const imageBuffer = Buffer.from(base64Image, 'base64');\n    fs.writeFileSync(filePath, imageBuffer);\n    \n    logInfo(`Screenshot saved to ${filePath}`);\n  } catch (error) {\n    const errorMessage = error instanceof Error ? error.message : 'Unknown error';\n    logError('Failed to save screenshot to file', { error: errorMessage, filePath });\n    throw new Error(`Failed to save screenshot: ${errorMessage}`);\n  }\n}\n
+import fs from 'fs';
+import path from 'path';
+import screenshot from 'screenshot-desktop';
+import { logInfo, logError } from '../utils/logger';
+
+/**
+ * Captures a screenshot of the entire desktop
+ * 
+ * @returns Promise<string> Base64-encoded image data
+ */
+export async function captureScreenshot(): Promise<string> {
+  try {
+    logInfo('Capturing full screen screenshot');
+    
+    // Capture screenshot as Buffer
+    const screenshotBuffer = await screenshot();
+    
+    // Convert Buffer to Base64 string
+    const base64Image = screenshotBuffer.toString('base64');
+    
+    logInfo('Screenshot captured successfully');
+    return base64Image;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logError('Failed to capture screenshot', { error: errorMessage });
+    throw new Error(`Screenshot capture failed: ${errorMessage}`);
+  }
+}
+
+/**
+ * Saves a base64 image to a file (for debugging/testing)
+ * 
+ * @param base64Image Base64-encoded image data
+ * @param filePath Path to save the image file
+ */
+export async function saveScreenshotToFile(base64Image: string, filePath: string = './screenshot.png'): Promise<void> {
+  try {
+    // Create the directory if it doesn't exist
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
+    // Convert Base64 to Buffer and save to file
+    const imageBuffer = Buffer.from(base64Image, 'base64');
+    fs.writeFileSync(filePath, imageBuffer);
+    
+    logInfo(`Screenshot saved to ${filePath}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logError('Failed to save screenshot to file', { error: errorMessage, filePath });
+    throw new Error(`Failed to save screenshot: ${errorMessage}`);
+  }
+}

@@ -1,1 +1,104 @@
-import 'dotenv/config';\nimport { createMCPServer } from './services/mcp';\nimport { logInfo, logError } from './utils/logger';\nimport { captureScreenshot } from './services/screenshot';\nimport { analyzeImage } from './services/vision';\nimport readline from 'readline';\n\n// Verify that the API key is configured\nif (!process.env.ANTHROPIC_API_KEY) {\n  logError('ANTHROPIC_API_KEY is not set. Please add it to your .env file');\n  process.exit(1);\n}\n\n/**\n * Main function that either starts the MCP server or runs in direct mode\n */\nasync function main() {\n  // Check if running in MCP server mode or direct mode\n  const useServer = process.argv.includes('--server');\n  \n  if (useServer) {\n    // Start MCP server\n    logInfo('Starting MCP server mode');\n    const server = createMCPServer();\n    \n    server.listen(3000, () => {\n      logInfo('MCP Server is running on port 3000');\n    });\n  } else {\n    // Run in direct mode (interactive CLI)\n    logInfo('Starting in direct mode');\n    await directMode();\n  }\n}\n\n/**\n * Interactive command-line interface for direct usage\n */\nasync function directMode() {\n  const rl = readline.createInterface({\n    input: process.stdin,\n    output: process.stdout\n  });\n\n  console.log('\\n📸 Screen View - Direct Mode');\n  console.log('==========================');\n  \n  async function promptUser() {\n    console.log('\\nOptions:');\n    console.log('1. Capture and analyze screen');\n    console.log('2. Exit');\n    \n    rl.question('\\nChoose an option (1-2): ', async (answer) => {\n      switch (answer.trim()) {\n        case '1':\n          rl.question('Enter prompt for analysis (press Enter for default): ', async (prompt) => {\n            try {\n              console.log('\\nCapturing and analyzing screen...');\n              \n              // Capture screenshot\n              const screenshot = await captureScreenshot();\n              \n              // Analyze with Claude\n              const analysis = await analyzeImage(\n                screenshot,\n                prompt || 'What do you see in this screenshot? Describe it in detail.',\n                'claude-3-opus-20240229'\n              );\n              \n              console.log('\\n✅ ANALYSIS:');\n              console.log('-------------------');\n              console.log(analysis);\n              console.log('-------------------');\n            } catch (error) {\n              const errorMessage = error instanceof Error ? error.message : 'Unknown error';\n              console.error(`\\n❌ ERROR: ${errorMessage}`);\n            }\n            \n            promptUser();\n          });\n          break;\n          \n        case '2':\n          console.log('Exiting. Goodbye!');\n          rl.close();\n          process.exit(0);\n          break;\n          \n        default:\n          console.log('Invalid option. Please try again.');\n          promptUser();\n      }\n    });\n  }\n  \n  // Start the prompt loop\n  promptUser();\n}\n\n// Start the application\nmain().catch(error => {\n  logError('Application error', { error: error instanceof Error ? error.message : 'Unknown error' });\n  process.exit(1);\n});\n
+import 'dotenv/config';
+import { createMCPServer } from './services/mcp';
+import { logInfo, logError } from './utils/logger';
+import { captureScreenshot } from './services/screenshot';
+import { analyzeImage } from './services/vision';
+import readline from 'readline';
+
+// Verify that the API key is configured
+if (!process.env.ANTHROPIC_API_KEY) {
+  logError('ANTHROPIC_API_KEY is not set. Please add it to your .env file');
+  process.exit(1);
+}
+
+/**
+ * Main function that either starts the MCP server or runs in direct mode
+ */
+async function main() {
+  // Check if running in MCP server mode or direct mode
+  const useServer = process.argv.includes('--server');
+  
+  if (useServer) {
+    // Start MCP server
+    logInfo('Starting MCP server mode');
+    const server = createMCPServer();
+    
+    server.listen(3000, () => {
+      logInfo('MCP Server is running on port 3000');
+    });
+  } else {
+    // Run in direct mode (interactive CLI)
+    logInfo('Starting in direct mode');
+    await directMode();
+  }
+}
+
+/**
+ * Interactive command-line interface for direct usage
+ */
+async function directMode() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  console.log('\n📸 Screen View - Direct Mode');
+  console.log('==========================');
+  
+  async function promptUser() {
+    console.log('\nOptions:');
+    console.log('1. Capture and analyze screen');
+    console.log('2. Exit');
+    
+    rl.question('\nChoose an option (1-2): ', async (answer) => {
+      switch (answer.trim()) {
+        case '1':
+          rl.question('Enter prompt for analysis (press Enter for default): ', async (prompt) => {
+            try {
+              console.log('\nCapturing and analyzing screen...');
+              
+              // Capture screenshot
+              const screenshot = await captureScreenshot();
+              
+              // Analyze with Claude
+              const analysis = await analyzeImage(
+                screenshot,
+                prompt || 'What do you see in this screenshot? Describe it in detail.',
+                'claude-3-opus-20240229'
+              );
+              
+              console.log('\n✅ ANALYSIS:');
+              console.log('-------------------');
+              console.log(analysis);
+              console.log('-------------------');
+            } catch (error) {
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+              console.error(`\n❌ ERROR: ${errorMessage}`);
+            }
+            
+            promptUser();
+          });
+          break;
+          
+        case '2':
+          console.log('Exiting. Goodbye!');
+          rl.close();
+          process.exit(0);
+          break;
+          
+        default:
+          console.log('Invalid option. Please try again.');
+          promptUser();
+      }
+    });
+  }
+  
+  // Start the prompt loop
+  promptUser();
+}
+
+// Start the application
+main().catch(error => {
+  logError('Application error', { error: error instanceof Error ? error.message : 'Unknown error' });
+  process.exit(1);
+});

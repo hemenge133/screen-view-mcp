@@ -1,1 +1,84 @@
-import { Server, ServerConfig } from '@modelcontextprotocol/sdk';\nimport { captureScreenshot } from './screenshot';\nimport { analyzeImage } from './vision';\nimport { logInfo, logError } from '../utils/logger';\n\n/**\n * Creates and configures an MCP server for screen capture and analysis\n * \n * @returns Configured MCP server instance\n */\nexport function createMCPServer(): Server {\n  // Define server configuration\n  const config: ServerConfig = {\n    info: {\n      name: 'screen-view-mcp',\n      version: '1.0.0',\n      description: 'MCP Server for screen capture and analysis',\n    }\n  };\n\n  // Create server instance\n  const server = new Server(config);\n\n  // Register the captureAndAnalyzeScreen tool\n  server.registerTool({\n    name: 'captureAndAnalyzeScreen',\n    description: 'Captures the screen and analyzes it using Claude 3 Opus vision model',\n    parameters: {\n      type: 'object',\n      properties: {\n        prompt: {\n          type: 'string',\n          description: 'Prompt to use for analyzing the screen content',\n        },\n        modelName: {\n          type: 'string',\n          description: 'Claude model to use (defaults to claude-3-opus-20240229)',\n        },\n        saveScreenshot: {\n          type: 'boolean',\n          description: 'Whether to save the screenshot to a file for debugging',\n        },\n      },\n      required: [],\n    },\n    handler: async ({ prompt, modelName, saveScreenshot }) => {\n      try {\n        logInfo('Processing captureAndAnalyzeScreen request', { prompt, modelName });\n        \n        // Capture the screenshot\n        const screenshotBase64 = await captureScreenshot();\n        \n        // Analyze the screenshot with Claude\n        const analysisText = await analyzeImage(\n          screenshotBase64,\n          prompt || 'What do you see in this screenshot? Describe it in detail.',\n          modelName || 'claude-3-opus-20240229'\n        );\n        \n        // Return the analysis result\n        return {\n          analysis: analysisText,\n          success: true,\n        };\n      } catch (error) {\n        const errorMessage = error instanceof Error ? error.message : 'Unknown error';\n        logError('Error in captureAndAnalyzeScreen', { error: errorMessage });\n        return {\n          success: false,\n          error: errorMessage,\n        };\n      }\n    },\n  });\n\n  return server;\n}\n
+import { Server, ServerConfig } from '@modelcontextprotocol/sdk';
+import { captureScreenshot } from './screenshot';
+import { analyzeImage } from './vision';
+import { logInfo, logError } from '../utils/logger';
+
+// Define parameter type for the tool handler
+interface CaptureAndAnalyzeParams {
+  prompt?: string;
+  modelName?: string;
+  saveScreenshot?: boolean;
+}
+
+/**
+ * Creates and configures an MCP server for screen capture and analysis
+ * 
+ * @returns Configured MCP server instance
+ */
+export function createMCPServer(): Server {
+  // Define server configuration
+  const config: ServerConfig = {
+    info: {
+      name: 'screen-view-mcp',
+      version: '1.0.0',
+      description: 'MCP Server for screen capture and analysis',
+    }
+  };
+
+  // Create server instance
+  const server = new Server(config);
+
+  // Register the captureAndAnalyzeScreen tool
+  server.registerTool({
+    name: 'captureAndAnalyzeScreen',
+    description: 'Captures the screen and analyzes it using Claude 3 Opus vision model',
+    parameters: {
+      type: 'object',
+      properties: {
+        prompt: {
+          type: 'string',
+          description: 'Prompt to use for analyzing the screen content',
+        },
+        modelName: {
+          type: 'string',
+          description: 'Claude model to use (defaults to claude-3-opus-20240229)',
+        },
+        saveScreenshot: {
+          type: 'boolean',
+          description: 'Whether to save the screenshot to a file for debugging',
+        },
+      },
+      required: [],
+    },
+    handler: async ({ prompt, modelName, saveScreenshot }: CaptureAndAnalyzeParams) => {
+      try {
+        logInfo('Processing captureAndAnalyzeScreen request', { prompt, modelName });
+        
+        // Capture the screenshot
+        const screenshotBase64 = await captureScreenshot();
+        
+        // Analyze the screenshot with Claude
+        const analysisText = await analyzeImage(
+          screenshotBase64,
+          prompt || 'What do you see in this screenshot? Describe it in detail.',
+          modelName || 'claude-3-opus-20240229'
+        );
+        
+        // Return the analysis result
+        return {
+          analysis: analysisText,
+          success: true,
+        };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        logError('Error in captureAndAnalyzeScreen', { error: errorMessage });
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      }
+    },
+  });
+
+  return server;
+}

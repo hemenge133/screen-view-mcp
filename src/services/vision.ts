@@ -1,1 +1,91 @@
-import { Anthropic } from '@anthropic-ai/sdk';\nimport { logInfo, logError } from '../utils/logger';\n\n// Initialize Anthropic client\nconst anthropic = new Anthropic({\n  apiKey: process.env.ANTHROPIC_API_KEY || '',\n});\n\n// Error type for Anthropic API errors\ninterface AnthropicError extends Error {\n  status?: number;\n  error?: any;\n}\n\n/**\n * Analyze an image using Claude Vision API\n * \n * @param imageBase64 Base64-encoded image data\n * @param prompt User prompt for image analysis\n * @param model Model to use (default: claude-3-opus-20240229)\n * @returns The analysis result text\n */\nexport async function analyzeImage(\n  imageBase64: string, \n  prompt: string = 'What do you see in this image? Describe it in detail.', \n  model: string = 'claude-3-opus-20240229'\n): Promise<string> {\n  try {\n    logInfo('Analyzing image with Claude Vision API', { model });\n    \n    // Ensure the prompt is not empty\n    if (!prompt || prompt.trim() === '') {\n      prompt = 'What do you see in this image? Describe it in detail.';\n    }\n    \n    // Handle model name to ensure correct format\n    const modelName = model.startsWith('claude-') ? model : 'claude-3-opus-20240229';\n\n    // Call Claude Vision API\n    const response = await anthropic.messages.create({\n      model: modelName,\n      max_tokens: 1024,\n      temperature: 0,\n      messages: [\n        {\n          role: 'user',\n          content: [\n            {\n              type: 'image',\n              source: {\n                type: 'base64',\n                media_type: 'image/jpeg',\n                data: imageBase64,\n              },\n            },\n            {\n              type: 'text',\n              text: prompt\n            }\n          ]\n        }\n      ]\n    });\n\n    // Extract and return the analysis text\n    const analysisText = response.content\n      .filter(item => item.type === 'text')\n      .map(item => 'text' in item ? item.text : '')\n      .join('\\n');\n    \n    logInfo('Image analysis complete');\n    return analysisText;\n  } catch (error) {\n    const err = error as AnthropicError;\n    const errorMessage = err.message || 'Unknown error';\n    \n    logError('Error analyzing image with Claude', { \n      error: errorMessage,\n      status: err.status,\n      details: err.error\n    });\n    \n    if (err.status === 429) {\n      throw new Error(`Rate limit exceeded: ${errorMessage}`);\n    } else if (err.status === 401) {\n      throw new Error('Authentication error: Please check your Anthropic API key');\n    } else {\n      throw new Error(`Failed to analyze image: ${errorMessage}`);\n    }\n  }\n}\n
+import { Anthropic } from '@anthropic-ai/sdk';
+import { logInfo, logError } from '../utils/logger';
+
+// Initialize Anthropic client
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY || '',
+});
+
+// Error type for Anthropic API errors
+interface AnthropicError extends Error {
+  status?: number;
+  error?: any;
+}
+
+/**
+ * Analyze an image using Claude Vision API
+ * 
+ * @param imageBase64 Base64-encoded image data
+ * @param prompt User prompt for image analysis
+ * @param model Model to use (default: claude-3-opus-20240229)
+ * @returns The analysis result text
+ */
+export async function analyzeImage(
+  imageBase64: string, 
+  prompt: string = 'What do you see in this image? Describe it in detail.', 
+  model: string = 'claude-3-opus-20240229'
+): Promise<string> {
+  try {
+    logInfo('Analyzing image with Claude Vision API', { model });
+    
+    // Ensure the prompt is not empty
+    if (!prompt || prompt.trim() === '') {
+      prompt = 'What do you see in this image? Describe it in detail.';
+    }
+    
+    // Handle model name to ensure correct format
+    const modelName = model.startsWith('claude-') ? model : 'claude-3-opus-20240229';
+
+    // Call Claude Vision API
+    const response = await anthropic.messages.create({
+      model: modelName,
+      max_tokens: 1024,
+      temperature: 0,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: 'image/jpeg',
+                data: imageBase64,
+              },
+            },
+            {
+              type: 'text',
+              text: prompt
+            }
+          ]
+        }
+      ]
+    });
+
+    // Extract and return the analysis text
+    const analysisText = response.content
+      .filter(item => item.type === 'text')
+      .map(item => 'text' in item ? item.text : '')
+      .join('\n');
+    
+    logInfo('Image analysis complete');
+    return analysisText;
+  } catch (error) {
+    const err = error as AnthropicError;
+    const errorMessage = err.message || 'Unknown error';
+    
+    logError('Error analyzing image with Claude', { 
+      error: errorMessage,
+      status: err.status,
+      details: err.error
+    });
+    
+    if (err.status === 429) {
+      throw new Error(`Rate limit exceeded: ${errorMessage}`);
+    } else if (err.status === 401) {
+      throw new Error('Authentication error: Please check your Anthropic API key');
+    } else {
+      throw new Error(`Failed to analyze image: ${errorMessage}`);
+    }
+  }
+}
