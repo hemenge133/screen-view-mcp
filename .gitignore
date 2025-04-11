@@ -1,0 +1,1 @@
+# Dependencies\nnode_modules/\n\n# Build output\ndist/\n\n# Environment variables\n.env\n\n# Logs\nlogs\n*.log\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\n\n# Editor directories and files\n.idea\n.vscode\n*.swp\n*.swo\n\n# OS specific\n.DS_Store\nThumbs.db\n
