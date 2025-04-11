@@ -2,7 +2,7 @@
   "mcpServers": {
     "screen-view-mcp": {
       "command": "node",
-      "args": ["./dist/index.js"],
+      "args": ["minimal-mcp-server.js"],
       "env": {
         "ANTHROPIC_API_KEY": "your_api_key_here"
       }
