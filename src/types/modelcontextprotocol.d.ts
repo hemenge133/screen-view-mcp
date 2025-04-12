@@ -1,4 +1,4 @@
-declare module '@modelcontextprotocol/sdk' {
+declare module '@modelcontextprotocol/sdk/dist/cjs/server' {
   export interface ServerConfig {
     info: {
       name: string;

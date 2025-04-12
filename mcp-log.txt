@@ -1,0 +1,14 @@
+Starting Basic MCP server
+Fatal error: No "exports" main defined in C:\Users\hayde\CursorStuff\screen-view-mcp\node_modules\@modelcontextprotocol\sdk\package.json
+Starting Basic MCP server
+Fatal error: Error: Cannot find module 'C:\Users\hayde\CursorStuff\screen-view-mcp\node_modules\@modelcontextprotocol\sdk\dist\cjs\server\mcp'
+    at createEsmNotFoundErr (node:internal/modules/cjs/loader:1177:15)
+    at finalizeEsmResolution (node:internal/modules/cjs/loader:1165:15)
+    at resolveExports (node:internal/modules/cjs/loader:590:14)
+    at Module._findPath (node:internal/modules/cjs/loader:664:31)
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1126:27)
+    at Module._load (node:internal/modules/cjs/loader:981:27)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (C:\Users\hayde\CursorStuff\screen-view-mcp\basic-mcp-server.js:12:25)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)

@@ -1,7 +1,20 @@
-import { Server, ServerConfig } from '@modelcontextprotocol/sdk';
+// We have to use require instead of import for the MCP SDK
+// This is a workaround for the package.json exports configuration issue
+const mcpServer = require('@modelcontextprotocol/sdk/dist/cjs/server');
+const { Server } = mcpServer;
+
 import { captureScreenshot } from './screenshot';
 import { analyzeImage } from './vision';
 import { logInfo, logError } from '../utils/logger';
+
+// Define the server config interface
+interface ServerConfig {
+  info: {
+    name: string;
+    version: string;
+    description: string;
+  };
+}
 
 // Define parameter type for the tool handler
 interface CaptureAndAnalyzeParams {
@@ -15,7 +28,7 @@ interface CaptureAndAnalyzeParams {
  * 
  * @returns Configured MCP server instance
  */
-export function createMCPServer(): Server {
+export function createMCPServer() {
   // Define server configuration
   const config: ServerConfig = {
     info: {

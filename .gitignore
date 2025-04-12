@@ -23,3 +23,30 @@ yarn-error.log*
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Debug files and screenshots
+*debug*.png
+test-screenshot.png
+debug-screenshot.png
+
+# Temporary files
+*-debug.log
+*.tgz
+
+# Test files that are not part of the core functionality
+global-echo.js
+minimal-echo.js
+debug-echo.mjs
+echo-server.mjs
+debug-mcp-server.js
+direct-mcp-server.js
+cjs-mcp-server.js
+working-mcp-server.js
+basic-mcp-server.js
+simple-mcp-server.js
+minimal-mcp-server.js
+mcp-server.js
+debug-mcp.js
+
+# Cursor MCP configuration
+.cursor/mcp.json

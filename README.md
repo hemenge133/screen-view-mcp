@@ -1,114 +1,128 @@
 # Screen View MCP
 
-A TypeScript application that captures your screen and analyzes it using Claude 3 Opus vision model via the Model Context Protocol (MCP) SDK.
+A Model Context Protocol (MCP) tool for capturing screenshots and analyzing them using Claude Vision API.
 
 ## Features
 
-- Full screen capture using `screenshot-desktop`
-- Image analysis using Claude 3 Opus vision model
-- Integration with the Model Context Protocol SDK
+- Captures full-screen screenshots
+- Analyzes screenshots with Claude Vision API
+- Provides detailed descriptions of screen content
+- Integrates with AI code editors and assistants via MCP
+- Automated configuration setup from environment variables
 
 ## Prerequisites
 
-- Node.js v16 or higher
-- An Anthropic API key (for Claude 3 Opus)
+- Node.js v16+ (v18+ recommended)
+- An Anthropic API key for Claude
 
-## Installation
+## Setup
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/hemenge133/screen-view-mcp.git
-   cd screen-view-mcp
-   ```
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/screen-view-mcp.git
+cd screen-view-mcp
+```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. Create a `.env` file from the template:
-   ```bash
-   cp .env.example .env
-   ```
+3. Build the TypeScript code:
+```bash
+npm run build
+```
 
-4. Add your Anthropic API key to the `.env` file:
-   ```
-   ANTHROPIC_API_KEY=your_api_key_here
-   ```
+## API Key Configuration
+
+The recommended way to configure your Anthropic API key is through environment variables:
+
+1. Create a `.env` file:
+```bash
+cp .env.example .env
+```
+
+2. Edit the `.env` file to add your Anthropic API key:
+```
+ANTHROPIC_API_KEY=sk-ant-api03-your-key-here
+```
+
+3. Generate MCP configuration:
+```bash
+node generate-mcp-config.mjs
+```
+
+This will automatically create the necessary MCP configuration file (`.cursor/mcp.json`) using your API key from the `.env` file.
+
+### Manual Configuration Options
+
+If you prefer to manually configure the tool, you can create the appropriate configuration file for your environment:
+
+#### Cursor IDE
+Create/edit `.cursor/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "screen-view-mcp": {
+      "command": "node",
+      "args": [
+        "<absolute_path_to>/screenshot-mcp-server.mjs",
+        "--api-key=sk-ant-api03-your-key-here"
+      ],
+      "transport": "stdio"
+    }
+  }
+}
+```
+
+#### Claude Desktop
+Create configuration at `~/.config/claude-desktop/mcp.json` (Linux/macOS) or `%APPDATA%\claude-desktop\mcp.json` (Windows):
+```json
+{
+  "mcpServers": {
+    "screen-view-mcp": {
+      "command": "node",
+      "args": [
+        "<absolute_path_to>/screenshot-mcp-server.mjs",
+        "--api-key=sk-ant-api03-your-key-here"
+      ],
+      "transport": "stdio"
+    }
+  }
+}
+```
+
+**Important Security Notes:**
+- Never commit your API key to version control
+- Use appropriate file permissions to protect configuration files containing API keys
+- Consider using environment variables or a secure secrets manager in production environments
 
 ## Usage
 
-Start the application:
+### Testing the Tool
+
+To test the screenshot functionality:
 
 ```bash
-npm run dev
+node test-screenshot.mjs
 ```
 
 This will:
-1. Capture your screen
-2. Send the screenshot to Claude 3 Opus
-3. Display the AI's analysis of what's on your screen
+- Capture a screenshot
+- Save it to `test-screenshot.png`
+- Analyze it with Claude Vision if an API key is available
 
-## Integration with Cursor (MCP)
+### Using with AI Assistants
 
-To use this MCP server with Cursor:
-
-### Project-level Configuration (recommended)
-
-1. The repository includes a `.cursor/mcp.json` file that configures the MCP server for this project.
-2. Edit the file to add your Anthropic API key:
-   ```json
-   {
-     "mcpServers": {
-       "screen-view-mcp": {
-         "command": "node",
-         "args": ["minimal-mcp-server.js"],
-         "env": {
-           "ANTHROPIC_API_KEY": "your_api_key_here"
-         }
-       }
-     }
-   }
-   ```
-3. Build the project before using it with Cursor:
-   ```bash
-   npm run build
-   ```
-4. Open the project in Cursor, and the MCP server will be automatically available to the Cursor Agent.
-
-### Using the Minimal Server
-
-This project now includes a simpler and more reliable implementation of the MCP server in `minimal-mcp-server.js`. This implementation:
-
-- Uses the latest MCP SDK API with the `McpServer` class
-- Properly handles the MCP protocol responses
-- Connects via the stdio transport for compatibility with Cursor
-
-To run the minimal server directly:
-
-```bash
-node minimal-mcp-server.js
+The tool can be invoked with prompts like:
+```
+I want to analyze what's on my screen right now
 ```
 
-### Global Configuration (optional)
-
-To make this MCP server available across all projects:
-
-1. Create a `~/.cursor/mcp.json` file in your home directory with the following content:
-   ```json
-   {
-     "mcpServers": {
-       "screen-view-mcp": {
-         "command": "node",
-         "args": ["path/to/screen-view-mcp/minimal-mcp-server.js"],
-         "env": {
-           "ANTHROPIC_API_KEY": "your_api_key_here"
-         }
-       }
-     }
-   }
-   ```
-2. Replace `path/to/screen-view-mcp` with the absolute path to your cloned repository.
+The tool accepts these parameters:
+- `prompt`: Custom prompt to send to Claude (default: "What do you see in this screenshot?")
+- `modelName`: Claude model to use (default: gpt-4-vision-preview)
+- `saveScreenshot`: Whether to save a copy of the screenshot (default: false)
 
 ## Development
 
@@ -124,12 +138,24 @@ npm test
 
 ## Troubleshooting
 
-If you encounter issues with the MCP server:
+Common issues and solutions:
 
-1. Make sure your Anthropic API key is correctly set in the `.env` file
-2. Check that you've built the project with `npm run build` before running
-3. Ensure you're using the correct server implementation (`minimal-mcp-server.js`)
-4. If you're still having issues, try running the server directly with `node minimal-mcp-server.js` to see any error output
+1. **API Key Not Found**
+   - Check that your API key is correctly set in the `.env` file
+   - Run `node generate-mcp-config.mjs` to regenerate the configuration
+   - Verify the API key format starts with `sk-ant-api03-`
+   - Ensure configuration files have correct permissions
+
+2. **MCP Server Issues**
+   - Verify the absolute path in your MCP configuration is correct
+   - Check that you've built the project with `npm run build`
+   - Try running the server directly: `node screenshot-mcp-server.mjs --api-key=your-key`
+   - Check error logs in your AI assistant's log files
+
+3. **Screenshot Capture Fails**
+   - Ensure you have appropriate screen capture permissions
+   - Try running with elevated privileges if needed
+   - Check system screenshot capabilities
 
 ## License
 

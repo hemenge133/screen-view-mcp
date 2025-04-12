@@ -1,93 +1,93 @@
-// Based on the example in the documentation
-const { join } = require('path');
-const { existsSync } = require('fs');
-
-// Helper function to find the package's base path
-const findPackagePath = () => {
-  const possiblePaths = [
-    join(process.cwd(), 'node_modules', '@modelcontextprotocol', 'sdk'),
-    // Add other potential paths if needed
-  ];
-  
-  for (const p of possiblePaths) {
-    if (existsSync(p)) {
-      return p;
-    }
-  }
-  
-  throw new Error('Cannot find @modelcontextprotocol/sdk package');
-};
-
-// Set up paths for ESM imports
-const packagePath = findPackagePath();
+// Simplified MCP server implementation
+const path = require('path');
+require('dotenv').config();
 
 try {
-  require('dotenv').config();
+  console.log('Starting MCP server initialization...');
   
-  // Import the required modules
-  const serverMcp = require(`${packagePath}/dist/cjs/server/mcp.js`);
-  const serverStdio = require(`${packagePath}/dist/cjs/server/stdio.js`);
+  // Direct require of the SDK
+  const { McpServer } = require('@modelcontextprotocol/sdk/dist/cjs/server/mcp.js');
+  const { StdioServerTransport } = require('@modelcontextprotocol/sdk/dist/cjs/server/stdio.js');
+  const { z } = require('zod');
   
-  const { McpServer } = serverMcp;
-  const { StdioServerTransport } = serverStdio;
+  console.log('SDK modules loaded successfully');
+  console.log('CWD:', process.cwd());
+  console.log('ENV:', {
+    NODE_ENV: process.env.NODE_ENV,
+    API_KEY_SET: !!process.env.ANTHROPIC_API_KEY
+  });
   
-  // Create a server
+  // Create server
   const server = new McpServer({
     name: "screen-view-mcp",
     version: "1.0.0",
-    description: "MCP Server for screen capture and analysis"
+    description: "Screen capture and analysis"
   });
   
-  // Import the screenshot and analysis functions
-  const { captureScreenshot } = require('./dist/services/screenshot');
-  const { analyzeImage } = require('./dist/services/vision');
+  // Load services with more robust error handling
+  let captureScreenshot, analyzeImage;
+  try {
+    const screenshotModule = require('./dist/services/screenshot');
+    const visionModule = require('./dist/services/vision');
+    captureScreenshot = screenshotModule.captureScreenshot;
+    analyzeImage = visionModule.analyzeImage;
+    console.log('Service modules loaded successfully');
+  } catch (loadError) {
+    console.error('Error loading service modules:', loadError);
+    // Provide fallback implementations
+    captureScreenshot = async () => {
+      return Buffer.from('placeholder').toString('base64');
+    };
+    analyzeImage = async () => {
+      return "Error: Could not load service modules. Please check the build.";
+    };
+  }
   
-  // Add a tool
-  server.tool("captureAndAnalyzeScreen",
+  // Register tool
+  server.tool(
+    "captureAndAnalyzeScreen",
     {
-      prompt: { type: 'string', optional: true, description: 'Prompt to use for analyzing the screen content' },
-      modelName: { type: 'string', optional: true, description: 'Claude model to use (defaults to claude-3-opus-20240229)' },
-      saveScreenshot: { type: 'boolean', optional: true, description: 'Whether to save the screenshot to a file for debugging' }
+      prompt: z.string().optional()
     },
-    async ({ prompt, modelName, saveScreenshot }) => {
+    async ({ prompt }) => {
       try {
-        console.log('Processing captureAndAnalyzeScreen request:', { prompt, modelName });
-        
-        // Capture screenshot
+        console.log('Processing tool request');
         const screenshotBase64 = await captureScreenshot();
-        
-        // Analyze the screenshot with Claude
         const analysisText = await analyzeImage(
           screenshotBase64,
-          prompt || 'What do you see in this screenshot? Describe it in detail.',
-          modelName || 'claude-3-opus-20240229'
+          prompt || 'Describe this screenshot',
+          'claude-3-opus-20240229'
         );
         
-        // Return the analysis result in MCP format
         return {
           content: [{ type: "text", text: analysisText }]
         };
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Error in captureAndAnalyzeScreen:', errorMessage);
+        console.error('Tool execution error:', error);
         return {
-          content: [{ type: "text", text: `Error: ${errorMessage}` }],
-          metadata: { error: errorMessage }
+          content: [{ type: "text", text: `Error: ${error.message || 'Unknown error'}` }]
         };
       }
     }
   );
   
-  // Start receiving messages on stdin and sending messages on stdout
-  console.log('Starting MCP server with stdio transport...');
+  // Connect with stdio transport
+  console.log('Connecting server with stdio transport...');
   const transport = new StdioServerTransport();
-  server.connect(transport).then(() => {
-    console.log('MCP Server connected and ready');
-  }).catch(error => {
-    console.error('Failed to connect MCP server:', error);
+  server.connect(transport)
+    .then(() => console.log('MCP Server connected successfully'))
+    .catch(err => {
+      console.error('Connection error:', err);
+      process.exit(1);
+    });
+  
+  // Handle process signals
+  process.on('SIGINT', () => {
+    console.log('Shutting down MCP server');
+    process.exit(0);
   });
   
 } catch (error) {
-  console.error('Server initialization error:', error);
+  console.error('Fatal error initializing MCP server:', error);
   process.exit(1);
 } 
