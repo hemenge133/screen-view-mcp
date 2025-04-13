@@ -187,3 +187,42 @@ node dist/screen-capture-mcp.js --sse --port 8080 --host localhost --api-key=you
 ## 📜 License
 
 MIT
+
+## Smithery Deployment
+
+This project is configured for deployment on Smithery, which allows hosting the MCP server over WebSocket transport.
+
+### Deployment Requirements
+
+- Dockerfile (included in repository)
+- smithery.yaml (included in repository)
+- Anthropic API Key (required during configuration)
+
+### Deployment Steps
+
+1. Add the server to Smithery
+2. Access the Deployments tab
+3. Configure with your Anthropic API Key
+4. Deploy the server
+
+### Configuration Options
+
+- `anthropicApiKey` (required): Your Anthropic API key
+- `verbose` (optional): Enable verbose logging (default: false)
+
+## Available Tools
+
+- `helloWorld`: Simple test tool that echoes a message
+- `captureAndAnalyzeScreen`: Captures a screenshot and analyzes it using Claude Vision
+
+## Usage Examples
+
+### Capturing and Analyzing a Screenshot
+
+```javascript
+const response = await mcpClient.invoke("captureAndAnalyzeScreen", {
+  prompt: "What's on my screen right now? Focus on the main content.",
+  modelName: "claude-3-opus-20240229"
+});
+console.log(response);
+```

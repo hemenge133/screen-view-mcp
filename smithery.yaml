@@ -1,0 +1,28 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - anthropicApiKey
+    properties:
+      anthropicApiKey:
+        type: string
+        description: Anthropic API key for accessing Claude Vision capabilities
+      verbose:
+        type: boolean
+        description: Enable verbose logging
+        default: false
+  commandFunction: |
+    (config) => {
+      const args = ["screen-view-mcp@2.0.15"];
+      if (config.verbose) {
+        args.push("--verbose");
+      }
+      return {
+        command: "npx",
+        args: args,
+        env: { 
+          ANTHROPIC_API_KEY: config.anthropicApiKey
+        }
+      };
+    } 
