@@ -8,6 +8,14 @@ startCommand:
       anthropicApiKey:
         type: string
         description: Anthropic API key for accessing Claude Vision capabilities
+      defaultModel:
+        type: string
+        description: Default Claude model to use for vision analysis
+        default: "claude-3-opus-20240229"
+        enum:
+          - "claude-3-opus-20240229"
+          - "claude-3-sonnet-20240229"
+          - "claude-3-haiku-20240307"
       verbose:
         type: boolean
         description: Enable verbose logging
@@ -18,11 +26,15 @@ startCommand:
       if (config.verbose) {
         args.push("--verbose");
       }
+      if (config.defaultModel) {
+        args.push("--model", config.defaultModel);
+      }
       return {
         command: "npx",
         args: args,
         env: { 
-          ANTHROPIC_API_KEY: config.anthropicApiKey
+          ANTHROPIC_API_KEY: config.anthropicApiKey,
+          DEFAULT_MODEL: config.defaultModel || "claude-3-opus-20240229"
         }
       };
     } 
