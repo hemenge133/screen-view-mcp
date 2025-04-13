@@ -1,18 +1,19 @@
 {
   "name": "screen-view-mcp",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "MCP tool for capturing screenshots and analyzing them with Claude Vision API",
-  "main": "dist/index.js",
+  "type": "module",
+  "main": "dist/mcp-server.js",
   "bin": {
-    "screen-view-mcp": "./dist/cli.js"
+    "screen-view-mcp": "dist/mcp-server.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
+    "start": "node dist/mcp-server.js",
+    "dev": "ts-node src/mcp-server.ts",
     "test": "jest",
     "prepublishOnly": "npm run build",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\"",

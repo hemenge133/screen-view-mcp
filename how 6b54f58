@@ -1,0 +1,10 @@
+[33m239934e[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m gitattributes file
+[33m7bb3d23[m version 1.1
+[33mf873981[m refactoring and update readme + smithery package 1.0.3
+[33maafd2e5[m Add automated MCP configuration with environment variables
+[33md000a2a[m Update README with minimal server implementation details
+[33m6b54f58[m Fix MCP server implementation to use the newer McpServer API
+[33mddb7569[m Add MCP integration for Cursor
+[33mfe0deb2[m Fix TypeScript errors and format files
+[33mf618d8b[m Add Jest configuration
+[33m277a5f2[m Add screenshot service test

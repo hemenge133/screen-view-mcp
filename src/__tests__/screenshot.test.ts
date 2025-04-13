@@ -4,7 +4,7 @@ import { captureScreenshot, saveScreenshotToFile } from '../services/screenshot'
 
 // Mock the screenshot-desktop module
 jest.mock('screenshot-desktop', () => {
-  return jest.fn().mockResolvedValue(Buffer.from('mocked-screenshot-data'));
+  return jest.fn().mockImplementation(() => Promise.resolve(Buffer.from('mocked-screenshot-data')));
 });
 
 // Mock fs module
@@ -43,7 +43,7 @@ describe('Screenshot Service', () => {
       expect(fs.writeFileSync).toHaveBeenCalledWith(filePath, expect.any(Buffer));
 
       // Verify buffer contains the expected data
-      const bufferArg = (fs.writeFileSync as jest.Mock).mock.calls[0][1];
+      const bufferArg = (fs.writeFileSync as jest.Mock).mock.calls[0][1] as Buffer;
       expect(bufferArg.toString()).toBe('test-image-data');
     });
 
