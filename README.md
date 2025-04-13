@@ -59,7 +59,11 @@ This will automatically:
 
 1. Install the package:
 ```bash
+# Install the latest version
 npm install -g screen-view-mcp
+
+# To ensure you get the exact latest version and avoid caching issues
+npm install -g screen-view-mcp@2.0.14  # Replace with latest version number
 ```
 
 2. Add to your AI client config file:
@@ -84,13 +88,39 @@ npm install -g screen-view-mcp
     "screen-view-mcp": {
       "command": "npx",
       "args": [
-        "screen-view-mcp",
-        "--api-key=your-anthropic-api-key"
+        "screen-view-mcp@2.0.14"  // Specify exact version to avoid caching issues
       ],
-      "transport": "stdio"
+      "transport": "stdio",
+      "env": {
+        "ANTHROPIC_API_KEY": "your-anthropic-api-key"
+      }
     }
   }
 }
+```
+
+### Troubleshooting Installation Issues
+
+If you encounter problems with the npm installation (such as "Invalid file signature" errors):
+
+1. Try installing with an explicit version number:
+```bash
+npm install -g screen-view-mcp@2.0.14  # Replace with latest version number
+```
+
+2. Clear npm cache and reinstall:
+```bash
+npm cache clean --force
+npm install -g screen-view-mcp@2.0.14
+```
+
+3. Install directly from a local tarball:
+```bash
+# Create a local package file
+npm pack
+
+# Install from the local file
+npm install -g ./screen-view-mcp-2.0.14.tgz
 ```
 
 ## 📝 Available Tool

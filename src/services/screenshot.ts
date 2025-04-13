@@ -7,9 +7,48 @@ import screenshot from 'screenshot-desktop';
  */
 export async function captureScreenshot(): Promise<string> {
   try {
-    // Capture the screenshot buffer and convert directly to base64
+    // Capture the screenshot buffer
     const buffer = await screenshot();
-    return buffer.toString('base64');
+    
+    // Log buffer info for debugging
+    console.log('Debug: Screenshot buffer length:', buffer.length);
+    
+    // Check file signature/magic numbers to determine file type
+    let fileType = 'unknown';
+    if (buffer.length > 4) {
+      // Check PNG signature (89 50 4E 47)
+      if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
+        fileType = 'PNG';
+      }
+      // Check JPEG signature (FF D8 FF)
+      else if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+        fileType = 'JPEG';
+      }
+      // Check BMP signature (42 4D)
+      else if (buffer[0] === 0x42 && buffer[1] === 0x4D) {
+        fileType = 'BMP';
+      }
+    }
+    
+    console.log('Debug: Detected file type:', fileType);
+    console.log('Debug: First 8 bytes:', Array.from(buffer.slice(0, 8)).map(b => '0x' + b.toString(16).padStart(2, '0')).join(' '));
+    
+    // Save a debug copy of the raw screenshot
+    const debugDir = path.join(process.cwd(), 'debug');
+    if (!fs.existsSync(debugDir)) {
+      fs.mkdirSync(debugDir, { recursive: true });
+    }
+    const debugPath = path.join(debugDir, `raw_screenshot_${Date.now()}.png`);
+    fs.writeFileSync(debugPath, buffer);
+    console.log(`Debug: Raw screenshot saved to ${debugPath}`);
+    
+    // Convert to base64
+    const base64Data = buffer.toString('base64');
+    
+    // Also save the base64 for debugging
+    fs.writeFileSync(path.join(debugDir, 'last_base64.txt'), base64Data);
+    
+    return base64Data;
   } catch (error) {
     console.error('Error capturing screenshot:', error);
     throw error;
@@ -29,9 +68,13 @@ export async function saveScreenshotToFile(base64Image: string, filePath: string
       fs.mkdirSync(dir, { recursive: true });
     }
 
+    // Remove data URI prefix if present
+    const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    
     // Convert base64 to buffer and save directly
-    const buffer = Buffer.from(base64Image, 'base64');
+    const buffer = Buffer.from(base64Data, 'base64');
     fs.writeFileSync(filePath, buffer);
+    console.log(`Screenshot saved to ${filePath}`);
   } catch (error) {
     console.error('Error saving screenshot:', error);
     throw error;
