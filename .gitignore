@@ -10,6 +10,10 @@ debug-*.png
 test-*.png
 *-debug.log
 
+# Screenshots directory (keep directory, ignore contents)
+screenshots/*
+!screenshots/.gitkeep
+
 # npm package files
 *.tgz
 

@@ -1,8 +1,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import screenshot from 'screenshot-desktop';
 import { Anthropic } from '@anthropic-ai/sdk';
 import { z } from 'zod';
+import path from 'path';
+import { captureScreenshot, saveScreenshotToFile } from './services/screenshot';
 
 interface CaptureAndAnalyzeScreenParams {
   prompt?: string;
@@ -17,7 +18,8 @@ export async function startServer() {
 
   const server = new McpServer({
     name: 'screen-view-mcp',
-    version: '1.0.1',
+    version: '1.1.0',
+    description: 'A tool for capturing and analyzing screenshots using Claude Vision'
   });
 
   server.tool(
@@ -32,46 +34,35 @@ export async function startServer() {
       modelName: z
         .string()
         .optional()
-        .describe('Claude model to use (default: gpt-4-vision-preview)'),
+        .describe('Claude model to use (default: claude-3-opus-20240229)'),
       saveScreenshot: z.boolean().optional().describe('Whether to save a copy of the screenshot'),
     },
     async ({ prompt, modelName, saveScreenshot }: CaptureAndAnalyzeScreenParams = {}) => {
       try {
         // Capture screenshot
-        const screenshotBuffer = await screenshot();
+        const base64Image = await captureScreenshot();
 
         // Save screenshot if requested
         if (saveScreenshot) {
-          // TODO: Implement screenshot saving
-          console.log('Screenshot saving not implemented yet');
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+          const filePath = path.join(process.cwd(), 'screenshots', `screenshot-${timestamp}.png`);
+          await saveScreenshotToFile(base64Image, filePath);
+          console.log(`Screenshot saved to: ${filePath}`);
         }
-
-        // Convert buffer to base64
-        const base64Image = screenshotBuffer.toString('base64');
 
         // Send to Claude for analysis
         const response = await anthropic.messages.create({
-          model: modelName || 'gpt-4-vision-preview',
+          model: modelName || "claude-3-opus-20240229",
           max_tokens: 1024,
           messages: [
             {
               role: 'user',
               content: [
-                {
-                  type: 'text',
-                  text: prompt || 'What do you see in this screenshot?',
-                },
-                {
-                  type: 'image',
-                  source: {
-                    type: 'base64',
-                    media_type: 'image/png',
-                    data: base64Image,
-                  },
-                },
-              ],
-            },
-          ],
+                { type: 'text', text: prompt || 'What do you see in this screenshot?' },
+                { type: 'image', source: { type: 'base64', media_type: 'image/png', data: base64Image } }
+              ]
+            }
+          ]
         });
 
         return {
@@ -86,5 +77,5 @@ export async function startServer() {
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.log('MCP server started');
+  console.log('Server started successfully');
 }
