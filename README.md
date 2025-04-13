@@ -1,5 +1,7 @@
 # Screen View MCP
 
+[![smithery badge](https://smithery.ai/badge/@hemenge133/screen-view-mcp)](https://smithery.ai/server/@hemenge133/screen-view-mcp)
+
 A Model Context Protocol (MCP) tool for capturing screenshots and analyzing them using Claude Vision API.
 
 ## Features
