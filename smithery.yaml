@@ -1,0 +1,28 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - anthropicApiKey
+    properties:
+      anthropicApiKey:
+        type: string
+        description: Your Anthropic API key for Claude Vision.
+      port:
+        type: number
+        default: 8080
+        description: Port for the MCP server (if applicable).
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'node',
+      args: ['screenshot-mcp-server.mjs', `--api-key=${config.anthropicApiKey}`],
+      env: { PORT: config.port ? String(config.port) : '8080' }
+    })
+  exampleConfig:
+    anthropicApiKey: sk-ant-api03-examplekey123
+    port: 8080
