@@ -3,7 +3,6 @@
 [![Node.js 18+](https://img.shields.io/badge/node-18%2B-brightgreen.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: prettier](https://img.shields.io/badge/code%20style-prettier-f8bc45.svg)](https://prettier.io/)
-[![smithery badge](https://smithery.ai/badge/@hemenge133/screen-view-mcp)](https://smithery.ai/protocol/@hemenge133/screen-view-mcp)
 
 A powerful Model Context Protocol (MCP) tool that enables AI assistants to capture and analyze screenshots using Claude Vision API. Take screenshots, analyze screen content, and get AI insights about your desktop interface. 
 
@@ -13,6 +12,7 @@ A powerful Model Context Protocol (MCP) tool that enables AI assistants to captu
 - 🔍 AI-powered scene analysis with Claude Vision
 - 🤖 Seamless integration with MCP-compatible AI assistants
 - 🛠️ Easy configuration and setup
+- 🔄 Support for both stdio and SSE transports
 
 ### 🎯 Use Cases
 
@@ -40,35 +40,11 @@ npm install -g screen-view-mcp@2.0.15  # Replace with latest version number
 
 Then configure your AI client as shown in the "Manual Configuration" section below.
 
-### Installing via Smithery (Coming Soon)
-
-Note: The Smithery integration is currently in progress. The following commands will be available once the package is published to the Smithery catalog:
-
-```bash
-# For Claude Desktop
-npx @smithery/cli install @hemenge133/screen-view-mcp --client claude --env.anthropicApiKey=your-api-key
-
-# For Cursor
-npx @smithery/cli install @hemenge133/screen-view-mcp --client cursor --env.anthropicApiKey=your-api-key
-
-# For CLIne
-npx @smithery/cli install @hemenge133/screen-view-mcp --client cline --env.anthropicApiKey=your-api-key
-
-# For Windsurf
-npx @smithery/cli install @hemenge133/screen-view-mcp --client windsurf --env.anthropicApiKey=your-api-key
-```
-
-You'll also be able to run it directly through Smithery:
-
-```bash
-npx @smithery/cli run @hemenge133/screen-view-mcp --env.anthropicApiKey=your-api-key
-```
-
-Until Smithery integration is available, please use the npm installation method described above.
-
 ### Manual Configuration
 
 After installing via npm, configure your AI client:
+
+#### For stdio transport (default)
 
 **Claude Desktop**:
 - Windows: `%APPDATA%/Claude/claude_desktop_config.json`  
@@ -101,6 +77,45 @@ After installing via npm, configure your AI client:
 }
 ```
 
+#### For SSE transport
+
+For clients that support SSE transport or for remote connection scenarios:
+
+```json
+{
+  "mcpServers": {
+    "screen-view-mcp": {
+      "command": "npx",
+      "args": [
+        "screen-view-mcp@2.0.15",
+        "--sse",
+        "--port", "8080",
+        "--host", "localhost"
+      ],
+      "env": {
+        "ANTHROPIC_API_KEY": "your-anthropic-api-key"
+      }
+    }
+  }
+}
+```
+
+For connecting to a remote SSE server (running on another machine):
+
+```json
+{
+  "mcpServers": {
+    "screen-view-mcp": {
+      "url": "http://your-server-ip:8080/sse",
+      "transport": "sse",
+      "env": {
+        "ANTHROPIC_API_KEY": "your-anthropic-api-key"
+      }
+    }
+  }
+}
+```
+
 ## 📝 Available Tools
 
 ### captureAndAnalyzeScreen
@@ -121,6 +136,31 @@ Example usage in Claude:
 Can you analyze what's on my screen right now and describe the layout?
 ```
 
+## Troubleshooting
+
+### Common Issues
+
+- **No access to screen capture**: Make sure your AI client has screen capture permissions
+- **API key errors**: Verify your Anthropic API key is valid and properly set in the configuration
+- **MCP tool not found**: Ensure the package is installed globally (`npm list -g screen-view-mcp`)
+- **Package version issues**: Specify the exact version in your configuration to avoid caching problems
+- **Transport issues**: Confirm that you're using the right transport mode for your client
+  - For Claude Desktop, use stdio transport (default)
+  - For clients supporting SSE, you can use the `--sse` flag
+
+### Transport Compatibility
+
+Here are the transport types supported by different clients:
+
+| Client         | Supported Transports |
+|----------------|----------------------|
+| Claude Desktop | stdio                |
+| Cursor         | stdio, SSE           |
+| Cline          | stdio, SSE           |
+| Windsurf       | stdio, SSE           |
+
+If you see connection errors, make sure you're using the correct transport configuration for your client.
+
 ## 🔧 Development
 
 1. Clone and install:
@@ -137,7 +177,11 @@ npm run build
 
 3. Test locally:
 ```bash
-node dist\screen-capture-mcp.js --api-key=your-anthropic-api-key
+# Test with stdio transport (default)
+node dist/screen-capture-mcp.js --api-key=your-anthropic-api-key
+
+# Test with SSE transport
+node dist/screen-capture-mcp.js --sse --port 8080 --host localhost --api-key=your-anthropic-api-key
 ```
 
 ## 📜 License
