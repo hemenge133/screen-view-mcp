@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "screen-view-mcp": {
+      "command": "node.exe",
+      "args": [
+        "C:\\Users\\hayde\\CursorStuff\\screen-view-mcp\\screenshot-mcp-server.mjs",
+        "--api-key=YOUR_API_KEY_HERE"
+      ],
+      "transport": "stdio"
+    }
+  }
+}
