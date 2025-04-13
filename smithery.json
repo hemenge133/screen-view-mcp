@@ -1,0 +1,76 @@
+{
+  "name": "screen-view-mcp",
+  "version": "1.0.3",
+  "description": "MCP tool for capturing screenshots and analyzing them with Claude Vision API",
+  "type": "mcp",
+  "clients": {
+    "claude": {
+      "config": {
+        "mcpServers": {
+          "screen-view-mcp": {
+            "command": "npx",
+            "args": [
+              "screen-view-mcp"
+            ],
+            "transport": "stdio",
+            "env": {
+              "ANTHROPIC_API_KEY": "{anthropicApiKey}"
+            }
+          }
+        }
+      },
+      "env": ["anthropicApiKey"]
+    },
+    "cursor": {
+      "config": {
+        "mcpServers": {
+          "screen-view-mcp": {
+            "command": "npx",
+            "args": [
+              "screen-view-mcp"
+            ],
+            "transport": "stdio",
+            "env": {
+              "ANTHROPIC_API_KEY": "{anthropicApiKey}"
+            }
+          }
+        }
+      },
+      "env": ["anthropicApiKey"]
+    },
+    "cline": {
+      "config": {
+        "mcpServers": {
+          "screen-view-mcp": {
+            "command": "npx",
+            "args": [
+              "screen-view-mcp"
+            ],
+            "transport": "stdio",
+            "env": {
+              "ANTHROPIC_API_KEY": "{anthropicApiKey}"
+            }
+          }
+        }
+      },
+      "env": ["anthropicApiKey"]
+    },
+    "windsurf": {
+      "config": {
+        "mcpServers": {
+          "screen-view-mcp": {
+            "command": "npx",
+            "args": [
+              "screen-view-mcp"
+            ],
+            "transport": "stdio",
+            "env": {
+              "ANTHROPIC_API_KEY": "{anthropicApiKey}"
+            }
+          }
+        }
+      },
+      "env": ["anthropicApiKey"]
+    }
+  }
+} 

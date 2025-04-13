@@ -4,19 +4,46 @@ node_modules/
 # Build output
 dist/
 
+# Debug files
+*.log
+debug-*.png
+test-*.png
+*-debug.log
+
+# npm package files
+*.tgz
+
 # Environment variables
 .env
+.env.local
+.env.*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Vim files
+*~
+*.un~
+.*.sw[a-p]
+.sw[a-p]
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
 
 # Logs
 logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 # Editor directories and files
-.idea
-.vscode
 *.swp
 *.swo
 
@@ -30,7 +57,6 @@ test-screenshot.png
 debug-screenshot.png
 
 # Temporary files
-*-debug.log
 *.tgz
 
 # Test files that are not part of the core functionality

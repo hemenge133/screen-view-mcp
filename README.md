@@ -1,162 +1,137 @@
-# Screen View MCP
+# 📸 screen-view-mcp
 
-A Model Context Protocol (MCP) tool for capturing screenshots and analyzing them using Claude Vision API.
+[![Node.js 18+](https://img.shields.io/badge/node-18%2B-brightgreen.svg)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: prettier](https://img.shields.io/badge/code%20style-prettier-f8bc45.svg)](https://prettier.io/)
+[![smithery badge](https://smithery.ai/badge/@hemenge133/screen-view-mcp)](https://smithery.ai/protocol/@hemenge133/screen-view-mcp)
 
-## Features
+A powerful Model Context Protocol (MCP) tool that enables AI assistants to capture and analyze screenshots using Claude Vision API. Take screenshots, analyze screen content, and get AI insights about your desktop interface. 
 
-- Captures full-screen screenshots
-- Analyzes screenshots with Claude Vision API
-- Provides detailed descriptions of screen content
-- Integrates with AI code editors and assistants via MCP
-- Automated configuration setup from environment variables
+## ✨ Features
 
-## Prerequisites
+- 📸 Instant full-screen screenshot capture
+- 🔍 AI-powered scene analysis with Claude Vision
+- 🤖 Seamless integration with MCP-compatible AI assistants
+- 🛠️ Easy configuration and setup
 
-- Node.js v16+ (v18+ recommended)
-- An Anthropic API key for Claude
+### 🎯 Use Cases
 
-## Setup
+- Capture and analyze screenshots of your desktop
+- Analyze UI elements and layouts
+- Debug visual issues with screen captures
+- Get AI insights about screen content
+- Document interface elements and layouts
+- Screen recording and analysis
+- Desktop automation with visual feedback
 
-1. Clone the repository:
+## 🚀 Quickstart
+
+### Installing via Smithery
+
+The easiest way to install Screen View MCP is through Smithery:
+
+```bash
+# For Claude Desktop
+npx @smithery/cli install @hemenge133/screen-view-mcp --client claude --env.anthropicApiKey=your-api-key
+
+# For Cursor
+npx @smithery/cli install @hemenge133/screen-view-mcp --client cursor --env.anthropicApiKey=your-api-key
+
+# For CLIne
+npx @smithery/cli install @hemenge133/screen-view-mcp --client cline --env.anthropicApiKey=your-api-key
+
+# For Windsurf
+npx @smithery/cli install @hemenge133/screen-view-mcp --client windsurf --env.anthropicApiKey=your-api-key
+```
+
+You can also run it directly through Smithery:
+
+```bash
+npx @smithery/cli run @hemenge133/screen-view-mcp --env.anthropicApiKey=your-api-key
+```
+
+This will automatically:
+1. Install the package
+2. Configure your AI client
+3. Set up environment variables
+
+### Manual Installation
+
+1. Install the package:
+```bash
+npm install -g screen-view-mcp
+```
+
+2. Add to your AI client config file:
+
+**Claude Desktop**:
+- Windows: `%APPDATA%/Claude/claude_desktop_config.json`  
+- MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+**Cursor**:
+- Windows: `%APPDATA%/Cursor/mcp.json`
+- MacOS: `~/Library/Application Support/Cursor/mcp.json`
+
+**CLIne**:
+- `~/.config/cline/mcp.json`
+
+**Windsurf**:
+- `~/.config/windsurf/mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "screen-view-mcp": {
+      "command": "npx",
+      "args": [
+        "screen-view-mcp",
+        "--api-key=your-anthropic-api-key"
+      ],
+      "transport": "stdio"
+    }
+  }
+}
+```
+
+## 📝 Available Tool
+
+### mcp_screen_view_mcp_captureAndAnalyzeScreen
+
+Captures and analyzes the current screen content.
+
+Parameters:
+```typescript
+{
+  prompt?: string;      // Custom prompt for analysis
+  modelName?: string;   // Claude model to use
+  saveScreenshot?: boolean; // Save screenshot locally
+}
+```
+
+Example usage in Claude:
+```
+Can you analyze what's on my screen right now and describe the layout?
+```
+
+## 🔧 Development
+
+1. Clone and install:
 ```bash
 git clone https://github.com/yourusername/screen-view-mcp.git
 cd screen-view-mcp
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Build the TypeScript code:
+2. Build:
 ```bash
 npm run build
 ```
 
-## API Key Configuration
-
-The recommended way to configure your Anthropic API key is through environment variables:
-
-1. Create a `.env` file:
+3. Test locally:
 ```bash
-cp .env.example .env
+node dist/index.js --api-key=your-anthropic-api-key
 ```
 
-2. Edit the `.env` file to add your Anthropic API key:
-```
-ANTHROPIC_API_KEY=sk-ant-api03-your-key-here
-```
-
-3. Generate MCP configuration:
-```bash
-node generate-mcp-config.mjs
-```
-
-This will automatically create the necessary MCP configuration file (`.cursor/mcp.json`) using your API key from the `.env` file.
-
-### Manual Configuration Options
-
-If you prefer to manually configure the tool, you can create the appropriate configuration file for your environment:
-
-#### Cursor IDE
-Create/edit `.cursor/mcp.json`:
-```json
-{
-  "mcpServers": {
-    "screen-view-mcp": {
-      "command": "node",
-      "args": [
-        "<absolute_path_to>/screenshot-mcp-server.mjs",
-        "--api-key=sk-ant-api03-your-key-here"
-      ],
-      "transport": "stdio"
-    }
-  }
-}
-```
-
-#### Claude Desktop
-Create configuration at `~/.config/claude-desktop/mcp.json` (Linux/macOS) or `%APPDATA%\claude-desktop\mcp.json` (Windows):
-```json
-{
-  "mcpServers": {
-    "screen-view-mcp": {
-      "command": "node",
-      "args": [
-        "<absolute_path_to>/screenshot-mcp-server.mjs",
-        "--api-key=sk-ant-api03-your-key-here"
-      ],
-      "transport": "stdio"
-    }
-  }
-}
-```
-
-**Important Security Notes:**
-- Never commit your API key to version control
-- Use appropriate file permissions to protect configuration files containing API keys
-- Consider using environment variables or a secure secrets manager in production environments
-
-## Usage
-
-### Testing the Tool
-
-To test the screenshot functionality:
-
-```bash
-node test-screenshot.mjs
-```
-
-This will:
-- Capture a screenshot
-- Save it to `test-screenshot.png`
-- Analyze it with Claude Vision if an API key is available
-
-### Using with AI Assistants
-
-The tool can be invoked with prompts like:
-```
-I want to analyze what's on my screen right now
-```
-
-The tool accepts these parameters:
-- `prompt`: Custom prompt to send to Claude (default: "What do you see in this screenshot?")
-- `modelName`: Claude model to use (default: gpt-4-vision-preview)
-- `saveScreenshot`: Whether to save a copy of the screenshot (default: false)
-
-## Development
-
-Build the project:
-```bash
-npm run build
-```
-
-Run tests:
-```bash
-npm test
-```
-
-## Troubleshooting
-
-Common issues and solutions:
-
-1. **API Key Not Found**
-   - Check that your API key is correctly set in the `.env` file
-   - Run `node generate-mcp-config.mjs` to regenerate the configuration
-   - Verify the API key format starts with `sk-ant-api03-`
-   - Ensure configuration files have correct permissions
-
-2. **MCP Server Issues**
-   - Verify the absolute path in your MCP configuration is correct
-   - Check that you've built the project with `npm run build`
-   - Try running the server directly: `node screenshot-mcp-server.mjs --api-key=your-key`
-   - Check error logs in your AI assistant's log files
-
-3. **Screenshot Capture Fails**
-   - Ensure you have appropriate screen capture permissions
-   - Try running with elevated privileges if needed
-   - Check system screenshot capabilities
-
-## License
+## 📜 License
 
 MIT

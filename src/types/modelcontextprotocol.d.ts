@@ -17,4 +17,4 @@ declare module '@modelcontextprotocol/sdk/dist/cjs/server' {
     }): void;
     listen(port: number, callback: () => void): void;
   }
-} 
+}
