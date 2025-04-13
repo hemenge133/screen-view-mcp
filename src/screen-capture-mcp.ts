@@ -70,6 +70,37 @@ try {
   }
 }
 
+// Function to map user-friendly model names to actual Anthropic model IDs
+function normalizeModelName(modelName: string): string {
+  const modelMap: Record<string, string> = {
+    // Claude 3.5 models
+    'claude-3-5-sonnet': 'claude-3-5-sonnet-20240620',
+    'claude-3.5-sonnet': 'claude-3-5-sonnet-20240620',
+    'claude-3.5': 'claude-3-5-sonnet-20240620',
+    
+    // Claude 3 models
+    'claude-3-opus': 'claude-3-opus-20240229',
+    'claude-3-sonnet': 'claude-3-sonnet-20240229',
+    'claude-3-haiku': 'claude-3-haiku-20240307',
+    
+    // Defaults to Opus if no match
+    'default': 'claude-3-opus-20240229'
+  };
+  
+  console.log(`Normalizing model name: ${modelName}`);
+  
+  // If it's already a full model ID (contains date), return as is
+  if (modelName.match(/\d{8}$/)) {
+    console.log(`Using exact model ID: ${modelName}`);
+    return modelName;
+  }
+  
+  // Otherwise look up in map, with fallback to default
+  const normalizedModel = modelMap[modelName.toLowerCase()] || modelMap['default'];
+  console.log(`Mapped ${modelName} to ${normalizedModel}`);
+  return normalizedModel;
+}
+
 /**
  * Main function to initialize and run the MCP server
  */
@@ -126,7 +157,11 @@ async function main() {
           console.log('✅ Screenshot captured successfully');
           
           const analysisPrompt = prompt || 'What do you see in this screenshot? Describe it in detail.';
-          const model = modelName || 'claude-3-opus-20240229';
+          // Normalize the model name to handle user-friendly names
+          const defaultModel = process.env.DEFAULT_MODEL || 'claude-3-opus-20240229';
+          const userModel = modelName || defaultModel;
+          const model = normalizeModelName(userModel);
+          
           console.log(`🧠 Analyzing image with Claude (${model})...`);
           logVerbose('Analysis prompt:', analysisPrompt);
           
