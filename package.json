@@ -1,6 +1,6 @@
 {
   "name": "screen-view-mcp",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "MCP tool for capturing screenshots and analyzing them with Claude Vision API",
   "type": "commonjs",
   "main": "dist/screen-capture-mcp.js",
