@@ -1,7 +1,7 @@
-import { Anthropic } from '@anthropic-ai/sdk';
-import fs from 'fs';
 import path from 'path';
-import sharp from 'sharp';
+import fs from 'fs';
+import { Anthropic } from '@anthropic-ai/sdk';
+import { captureScreenshot, saveScreenshotToFile } from './screenshot';
 
 /**
  * Analyzes an image with Claude Vision API
@@ -15,23 +15,19 @@ export async function analyzeImage(
   prompt: string = 'What do you see in this screenshot?',
   modelName: string = 'claude-3-opus-20240229'
 ): Promise<string> {
-  // Initialize the Anthropic client
-  const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY || '',
-  });
-
   try {
-    // Ensure image is in PNG format
-    const imageBuffer = Buffer.from(base64Image, 'base64');
-    const pngBuffer = await sharp(imageBuffer)
-      .png()
-      .toBuffer();
-    
-    // Convert to base64 for API
-    const pngBase64 = pngBuffer.toString('base64');
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+    }
 
+    // Initialize the Anthropic client
+    const client = new Anthropic({
+      apiKey,
+    });
+    
     // Send to Claude for analysis
-    const response = await anthropic.messages.create({
+    const response = await client.messages.create({
       model: modelName,
       max_tokens: 1024,
       messages: [
@@ -44,7 +40,7 @@ export async function analyzeImage(
               source: {
                 type: 'base64',
                 media_type: 'image/png',
-                data: pngBase64,
+                data: base64Image,
               },
             },
           ],
@@ -55,6 +51,65 @@ export async function analyzeImage(
     return response.content[0].text;
   } catch (error) {
     console.error('Claude Vision API error:', error);
+    throw error;
+  }
+}
+
+export async function analyzeScreenContent(
+  prompt: string,
+  modelName = 'claude-3-haiku-20240307',
+  saveScreenshot = false
+): Promise<string> {
+  try {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+    }
+
+    const client = new Anthropic({
+      apiKey,
+    });
+
+    // Capture screenshot as base64
+    const screenshotBase64 = await captureScreenshot();
+    
+    // Save screenshot if requested
+    if (saveScreenshot) {
+      const timestamp = Date.now();
+      const screenshotDir = path.join(process.cwd(), 'screenshots');
+      const screenshotPath = path.join(screenshotDir, `screenshot_${timestamp}.png`);
+      await saveScreenshotToFile(screenshotBase64, screenshotPath);
+      console.log(`Screenshot saved to ${screenshotPath}`);
+    }
+
+    // Analyze the screenshot with Claude
+    const response = await client.messages.create({
+      model: modelName,
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: 'image/png',
+                data: screenshotBase64,
+              },
+            },
+            {
+              type: 'text',
+              text: prompt || 'Describe what you see in this screenshot in detail.',
+            },
+          ],
+        },
+      ],
+    });
+
+    return response.content[0].text;
+  } catch (error) {
+    console.error('Error analyzing screen content:', error);
     throw error;
   }
 } 

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Screen capture MCP server with direct module imports
 import path from 'path';
 import { z } from 'zod';

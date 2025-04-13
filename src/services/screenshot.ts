@@ -1,22 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import screenshot from 'screenshot-desktop';
-import sharp from 'sharp';
 
 /**
  * Captures a screenshot and returns it as a base64 string
  */
 export async function captureScreenshot(): Promise<string> {
   try {
-    // Capture the raw screenshot buffer
+    // Capture the screenshot buffer and convert directly to base64
     const buffer = await screenshot();
-    
-    // Use sharp to convert to PNG format
-    const pngBuffer = await sharp(buffer)
-      .png()
-      .toBuffer();
-    
-    return pngBuffer.toString('base64');
+    return buffer.toString('base64');
   } catch (error) {
     console.error('Error capturing screenshot:', error);
     throw error;
@@ -36,11 +29,9 @@ export async function saveScreenshotToFile(base64Image: string, filePath: string
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    // Convert base64 to buffer and save as PNG
+    // Convert base64 to buffer and save directly
     const buffer = Buffer.from(base64Image, 'base64');
-    await sharp(buffer)
-      .png()
-      .toFile(filePath);
+    fs.writeFileSync(filePath, buffer);
   } catch (error) {
     console.error('Error saving screenshot:', error);
     throw error;

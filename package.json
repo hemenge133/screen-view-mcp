@@ -1,11 +1,11 @@
 {
   "name": "screen-view-mcp",
-  "version": "1.1.2",
+  "version": "2.0.1",
   "description": "MCP tool for capturing screenshots and analyzing them with Claude Vision API",
   "type": "commonjs",
   "main": "dist/screen-capture-mcp.js",
   "bin": {
-    "screen-view-mcp": "dist/screen-capture-mcp.js"
+    "screen-view-mcp": "./dist/screen-capture-mcp.js"
   },
   "files": [
     "dist"
@@ -39,16 +39,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/screen-view-mcp"
+    "url": "https://github.com/hemenge133/screen-view-mcp"
   },
-  "author": "",
+  "author": "Hayden Menge",
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.17.1",
     "@modelcontextprotocol/sdk": "^1.9.0",
     "dotenv": "^16.5.0",
     "screenshot-desktop": "^1.15.0",
-    "sharp": "^0.34.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
