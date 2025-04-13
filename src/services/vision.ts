@@ -26,6 +26,9 @@ export async function analyzeImage(
       apiKey,
     });
     
+    // Make sure the base64 string doesn't have any prefix
+    const cleanedBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    
     // Send to Claude for analysis
     const response = await client.messages.create({
       model: modelName,
@@ -40,7 +43,7 @@ export async function analyzeImage(
               source: {
                 type: 'base64',
                 media_type: 'image/png',
-                data: base64Image,
+                data: cleanedBase64,
               },
             },
           ],
@@ -73,6 +76,9 @@ export async function analyzeScreenContent(
     // Capture screenshot as base64
     const screenshotBase64 = await captureScreenshot();
     
+    // Make sure the base64 string doesn't have any prefix
+    const cleanedBase64 = screenshotBase64.replace(/^data:image\/\w+;base64,/, '');
+    
     // Save screenshot if requested
     if (saveScreenshot) {
       const timestamp = Date.now();
@@ -95,7 +101,7 @@ export async function analyzeScreenContent(
               source: {
                 type: 'base64',
                 media_type: 'image/png',
-                data: screenshotBase64,
+                data: cleanedBase64,
               },
             },
             {
