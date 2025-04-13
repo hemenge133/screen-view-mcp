@@ -4,6 +4,7 @@
   "description": "MCP tool for capturing screenshots and analyzing them with Claude Vision API",
   "type": "mcp",
   "npmPackage": "screen-view-mcp@2.0.15",
+  "mode": "local",
   "clients": {
     "claude": {
       "config": {
