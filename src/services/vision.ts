@@ -8,30 +8,28 @@ import { captureScreenshot, saveScreenshotToFile } from './screenshot';
  * @param base64Image - Base64-encoded image data
  * @returns The detected MIME type
  */
-function detectImageType(base64Image: string): 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp' {
+function detectImageType(
+  base64Image: string
+): 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp' {
   try {
     // Convert the first few bytes of base64 to a buffer to check signature
     const signatureBuffer = Buffer.from(base64Image.substring(0, 24), 'base64');
-    
+
     // Check PNG signature (89 50 4E 47)
     if (
-      signatureBuffer[0] === 0x89 && 
-      signatureBuffer[1] === 0x50 && 
-      signatureBuffer[2] === 0x4E && 
+      signatureBuffer[0] === 0x89 &&
+      signatureBuffer[1] === 0x50 &&
+      signatureBuffer[2] === 0x4e &&
       signatureBuffer[3] === 0x47
     ) {
       return 'image/png';
     }
-    
+
     // Check JPEG signature (FF D8 FF)
-    if (
-      signatureBuffer[0] === 0xFF && 
-      signatureBuffer[1] === 0xD8 && 
-      signatureBuffer[2] === 0xFF
-    ) {
+    if (signatureBuffer[0] === 0xff && signatureBuffer[1] === 0xd8 && signatureBuffer[2] === 0xff) {
       return 'image/jpeg';
     }
-    
+
     // Default to PNG if we can't detect
     return 'image/png';
   } catch (error) {
@@ -62,16 +60,16 @@ export async function analyzeImage(
     const client = new Anthropic({
       apiKey,
     });
-    
+
     // Handle multiple possible formats of base64 data
     const cleanedBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
-    
+
     console.log('Debug: Base64 image length:', cleanedBase64.length);
-    
+
     // Detect image type
     const mediaType = detectImageType(cleanedBase64);
     console.log('Debug: Detected media type:', mediaType);
-    
+
     // Send to Claude for analysis
     const response = await client.messages.create({
       model: modelName,
@@ -118,16 +116,16 @@ export async function analyzeScreenContent(
 
     // Capture screenshot as base64
     const screenshotBase64 = await captureScreenshot();
-    
+
     // Clean base64 data
     const cleanedBase64 = screenshotBase64.replace(/^data:image\/\w+;base64,/, '');
-    
+
     console.log('Debug: Screenshot base64 length:', cleanedBase64.length);
-    
+
     // Detect image type
     const mediaType = detectImageType(cleanedBase64);
     console.log('Debug: Detected media type for screenshot:', mediaType);
-    
+
     // Save screenshot if requested
     if (saveScreenshot) {
       const timestamp = Date.now();
@@ -167,4 +165,4 @@ export async function analyzeScreenContent(
     console.error('Error analyzing screen content:', error);
     throw error;
   }
-} 
+}

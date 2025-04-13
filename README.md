@@ -26,54 +26,56 @@ A powerful Model Context Protocol (MCP) tool that enables AI assistants to captu
 
 ## 🚀 Quickstart
 
-### Installing via Smithery
+### Installing via npm (Recommended)
 
-The easiest way to install Screen View MCP is through Smithery:
+The most reliable way to install Screen View MCP is through npm:
 
-```bash
-# For Claude Desktop
-npx @smithery/cli install @hemenge133/screen-view-mcp --client claude --env.anthropicApiKey=your-api-key
-
-# For Cursor
-npx @smithery/cli install @hemenge133/screen-view-mcp --client cursor --env.anthropicApiKey=your-api-key
-
-# For CLIne
-npx @smithery/cli install @hemenge133/screen-view-mcp --client cline --env.anthropicApiKey=your-api-key
-
-# For Windsurf
-npx @smithery/cli install @hemenge133/screen-view-mcp --client windsurf --env.anthropicApiKey=your-api-key
-```
-
-You can also run it directly through Smithery:
-
-```bash
-npx @smithery/cli run @hemenge133/screen-view-mcp --env.anthropicApiKey=your-api-key
-```
-
-This will automatically:
-1. Install the package
-2. Configure your AI client
-3. Set up environment variables
-
-### Manual Installation
-
-1. Install the package:
 ```bash
 # Install the latest version
 npm install -g screen-view-mcp
 
 # To ensure you get the exact latest version and avoid caching issues
-npm install -g screen-view-mcp@2.0.14  # Replace with latest version number
+npm install -g screen-view-mcp@2.0.15  # Replace with latest version number
 ```
 
-2. Add to your AI client config file:
+Then configure your AI client as shown in the "Manual Configuration" section below.
+
+### Installing via Smithery (Coming Soon)
+
+Note: The Smithery integration is currently in progress. The following commands will be available once the package is published to the Smithery catalog:
+
+```bash
+# For Claude Desktop
+npx @smithery/cli install @hemenge133/screen-view-mcp@2.0.15 --client claude --env.anthropicApiKey=your-api-key
+
+# For Cursor
+npx @smithery/cli install @hemenge133/screen-view-mcp@2.0.15 --client cursor --env.anthropicApiKey=your-api-key
+
+# For CLIne
+npx @smithery/cli install @hemenge133/screen-view-mcp@2.0.15 --client cline --env.anthropicApiKey=your-api-key
+
+# For Windsurf
+npx @smithery/cli install @hemenge133/screen-view-mcp@2.0.15 --client windsurf --env.anthropicApiKey=your-api-key
+```
+
+You'll also be able to run it directly through Smithery:
+
+```bash
+npx @smithery/cli run @hemenge133/screen-view-mcp@2.0.15 --env.anthropicApiKey=your-api-key
+```
+
+Until Smithery integration is available, please use the manual installation method.
+
+### Manual Configuration
+
+After installing via npm, configure your AI client:
 
 **Claude Desktop**:
 - Windows: `%APPDATA%/Claude/claude_desktop_config.json`  
 - MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 **Cursor**:
-- Windows: `%APPDATA%/Cursor/mcp.json`
+- Windows: `%APPDATA%/Cursor/mcp.json` or `~/.cursor/mcp.json`
 - MacOS: `~/Library/Application Support/Cursor/mcp.json`
 
 **CLIne**:
@@ -88,7 +90,7 @@ npm install -g screen-view-mcp@2.0.14  # Replace with latest version number
     "screen-view-mcp": {
       "command": "npx",
       "args": [
-        "screen-view-mcp@2.0.14"  // Specify exact version to avoid caching issues
+        "screen-view-mcp@2.0.15"  // Specify exact version to avoid caching issues
       ],
       "transport": "stdio",
       "env": {
@@ -99,33 +101,9 @@ npm install -g screen-view-mcp@2.0.14  # Replace with latest version number
 }
 ```
 
-### Troubleshooting Installation Issues
+## 📝 Available Tools
 
-If you encounter problems with the npm installation (such as "Invalid file signature" errors):
-
-1. Try installing with an explicit version number:
-```bash
-npm install -g screen-view-mcp@2.0.14  # Replace with latest version number
-```
-
-2. Clear npm cache and reinstall:
-```bash
-npm cache clean --force
-npm install -g screen-view-mcp@2.0.14
-```
-
-3. Install directly from a local tarball:
-```bash
-# Create a local package file
-npm pack
-
-# Install from the local file
-npm install -g ./screen-view-mcp-2.0.14.tgz
-```
-
-## 📝 Available Tool
-
-### mcp_screen_view_mcp_captureAndAnalyzeScreen
+### captureAndAnalyzeScreen
 
 Captures and analyzes the current screen content.
 
@@ -159,7 +137,7 @@ npm run build
 
 3. Test locally:
 ```bash
-node dist/index.js --api-key=your-anthropic-api-key
+node dist\screen-capture-mcp.js --api-key=your-anthropic-api-key
 ```
 
 ## 📜 License

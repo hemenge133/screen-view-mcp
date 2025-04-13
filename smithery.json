@@ -1,6 +1,6 @@
 {
   "name": "screen-view-mcp",
-  "version": "1.1.0",
+  "version": "2.0.15",
   "description": "MCP tool for capturing screenshots and analyzing them with Claude Vision API",
   "type": "mcp",
   "clients": {
@@ -10,7 +10,7 @@
           "screen-view-mcp": {
             "command": "npx",
             "args": [
-              "screen-view-mcp"
+              "screen-view-mcp@2.0.15"
             ],
             "transport": "stdio",
             "env": {
@@ -27,7 +27,7 @@
           "screen-view-mcp": {
             "command": "npx",
             "args": [
-              "screen-view-mcp"
+              "screen-view-mcp@2.0.15"
             ],
             "transport": "stdio",
             "env": {
@@ -44,7 +44,7 @@
           "screen-view-mcp": {
             "command": "npx",
             "args": [
-              "screen-view-mcp"
+              "screen-view-mcp@2.0.15"
             ],
             "transport": "stdio",
             "env": {
@@ -61,7 +61,7 @@
           "screen-view-mcp": {
             "command": "npx",
             "args": [
-              "screen-view-mcp"
+              "screen-view-mcp@2.0.15"
             ],
             "transport": "stdio",
             "env": {

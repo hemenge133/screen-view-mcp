@@ -21,92 +21,93 @@ const stdio = require(stdioPath);
 async function main() {
   try {
     console.log('Starting screen capture MCP server...');
-    
+
     console.log('All modules loaded');
     console.log('API_KEY_SET:', !!process.env.ANTHROPIC_API_KEY);
-    
+
     // Create server
     const server = new mcp.McpServer({
-      name: "screen-view-mcp",
-      version: "1.0.0",
-      description: "Screen capture and analysis with Claude Vision"
+      name: 'screen-view-mcp',
+      version: '1.0.0',
+      description: 'Screen capture and analysis with Claude Vision',
     });
-    
+
     // Register the hello world tool for testing
     server.tool(
-      "helloWorld",
+      'helloWorld',
       {
-        message: z.string().optional()
+        message: z.string().optional(),
       },
       async ({ message }: { message?: string }) => {
         console.log('Hello world tool invoked with message:', message);
         return {
-          content: [{ 
-            type: "text", 
-            text: `Hello! You said: "${message || 'No message provided'}"` 
-          }]
+          content: [
+            {
+              type: 'text',
+              text: `Hello! You said: "${message || 'No message provided'}"`,
+            },
+          ],
         };
       }
     );
-    
+
     // Register the screen capture and analysis tool
     server.tool(
-      "captureAndAnalyzeScreen",
+      'captureAndAnalyzeScreen',
       {
         prompt: z.string().optional(),
         modelName: z.string().optional(),
-        saveScreenshot: z.boolean().optional()
+        saveScreenshot: z.boolean().optional(),
       },
-      async ({ 
-        prompt, 
-        modelName, 
-        saveScreenshot 
-      }: { 
-        prompt?: string; 
-        modelName?: string; 
+      async ({
+        prompt,
+        modelName,
+        saveScreenshot,
+      }: {
+        prompt?: string;
+        modelName?: string;
         saveScreenshot?: boolean;
       }) => {
         try {
           console.log('Capturing screenshot...');
           const screenshotBase64 = await captureScreenshot();
-          
-          const analysisPrompt = prompt || 'What do you see in this screenshot? Describe it in detail.';
+
+          const analysisPrompt =
+            prompt || 'What do you see in this screenshot? Describe it in detail.';
           const model = modelName || 'claude-3-opus-20240229';
-          
+
           console.log('Analyzing image with Claude...');
-          const analysis = await analyzeImage(
-            screenshotBase64, 
-            analysisPrompt,
-            model
-          );
-          
+          const analysis = await analyzeImage(screenshotBase64, analysisPrompt, model);
+
           console.log('Analysis complete');
           return {
-            content: [{ type: "text", text: analysis }]
+            content: [{ type: 'text', text: analysis }],
           };
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           console.error('Error in screen_capture tool:', errorMessage);
           return {
-            content: [{ 
-              type: "text", 
-              text: `Error analyzing screenshot: ${errorMessage}`
-            }]
+            content: [
+              {
+                type: 'text',
+                text: `Error analyzing screenshot: ${errorMessage}`,
+              },
+            ],
           };
         }
       }
     );
-    
+
     // Connect with stdio transport
     console.log('Connecting server with stdio transport...');
     const transport = new stdio.StdioServerTransport();
-    server.connect(transport)
+    server
+      .connect(transport)
       .then(() => console.log('MCP Server connected successfully'))
       .catch((err: Error) => {
         console.error('Connection error:', err);
         process.exit(1);
       });
-  
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Fatal error initializing MCP server:', errorMessage);
@@ -116,4 +117,4 @@ async function main() {
 }
 
 // Run the main function
-main(); 
+main();
