@@ -46,25 +46,25 @@ Note: The Smithery integration is currently in progress. The following commands 
 
 ```bash
 # For Claude Desktop
-npx @smithery/cli install @hemenge133/screen-view-mcp@2.0.15 --client claude --env.anthropicApiKey=your-api-key
+npx @smithery/cli install @hemenge133/screen-view-mcp --client claude --env.anthropicApiKey=your-api-key
 
 # For Cursor
-npx @smithery/cli install @hemenge133/screen-view-mcp@2.0.15 --client cursor --env.anthropicApiKey=your-api-key
+npx @smithery/cli install @hemenge133/screen-view-mcp --client cursor --env.anthropicApiKey=your-api-key
 
 # For CLIne
-npx @smithery/cli install @hemenge133/screen-view-mcp@2.0.15 --client cline --env.anthropicApiKey=your-api-key
+npx @smithery/cli install @hemenge133/screen-view-mcp --client cline --env.anthropicApiKey=your-api-key
 
 # For Windsurf
-npx @smithery/cli install @hemenge133/screen-view-mcp@2.0.15 --client windsurf --env.anthropicApiKey=your-api-key
+npx @smithery/cli install @hemenge133/screen-view-mcp --client windsurf --env.anthropicApiKey=your-api-key
 ```
 
 You'll also be able to run it directly through Smithery:
 
 ```bash
-npx @smithery/cli run @hemenge133/screen-view-mcp@2.0.15 --env.anthropicApiKey=your-api-key
+npx @smithery/cli run @hemenge133/screen-view-mcp --env.anthropicApiKey=your-api-key
 ```
 
-Until Smithery integration is available, please use the manual installation method.
+Until Smithery integration is available, please use the npm installation method described above.
 
 ### Manual Configuration
 
